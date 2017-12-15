@@ -10,6 +10,8 @@ import System.Environment
 import Data.ByteString.Char8 (pack)
 import Database.PostgreSQL.Simple
 import Network.HTTP.Types.Status
+import Data.Aeson (ToJSON, toJSON, object)
+import Data.Aeson.Types ((.=))
 
 import Shop (Shop, getShop)
 import User (User)
@@ -32,7 +34,7 @@ server db = do
         status status401
         text "token not registered"
       (shop : _) ->
-        json shop
+        json $ ShopResponse shop
   get "/identify" $ do
     text ""
   post "/identify" $ do
@@ -41,6 +43,16 @@ server db = do
     text ""
   post "/spend" $ do
     text ""
+
+
+data ShopResponse = ShopResponse { shop :: Shop }
+instance ToJSON ShopResponse where
+  toJSON (ShopResponse shop) =
+    object
+      [ "message" .= ("Authorized. Token is valid" :: Text)
+      , "dev" .= shop
+      , "status" .= ("success" :: Text)
+      ]
 
 parseToken :: Maybe Text -> Text
 parseToken Nothing = ""
