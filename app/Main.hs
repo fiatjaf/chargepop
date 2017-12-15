@@ -4,12 +4,15 @@ module Main where
 
 import GHC.Generics
 import Control.Monad.IO.Class
-import Data.Text.Internal.Lazy (Text)
+import Data.Text.Lazy (Text)
 import Web.Scotty
 import System.Environment
-import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteString.Char8 (pack)
 import Database.PostgreSQL.Simple
+import Network.HTTP.Types.Status
+
+import Shop (Shop, getShop)
+import User (User)
 
 main :: IO ()
 main = do
@@ -22,10 +25,14 @@ main = do
 server :: Connection -> ScottyM()
 server db = do
   get "/ping" $ do
-    res <- liftIO ( query_ db "select email from shops where token = '9384yoisehrf9w38g5'" :: IO [Only Text] )
-    case res of
-      [] -> text "not found"
-      (Only x:_) -> text x
+    token <- param "token"
+    shops <- liftIO $ getShop db token
+    case shops of
+      [] -> do
+        status status401
+        text "token not registered"
+      (shop : _) ->
+        json shop
   get "/identify" $ do
     text ""
   post "/identify" $ do
@@ -34,8 +41,7 @@ server db = do
     text ""
   post "/spend" $ do
     text ""
-  
 
-data User = User { userId :: Text, userEmail :: Text } deriving (Show, Generic)
-instance ToJSON User
-instance FromJSON User
+parseToken :: Maybe Text -> Text
+parseToken Nothing = ""
+parseToken (Just auth) = auth

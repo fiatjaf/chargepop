@@ -2,3 +2,5 @@
 chargepop.cabal
 *~
 .env
+*.swp
+*.swo
