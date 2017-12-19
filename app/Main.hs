@@ -14,7 +14,7 @@ import Data.Aeson (ToJSON, toJSON, object)
 import Data.Aeson.Types ((.=))
 import Data.Monoid ((<>))
 
-import Shop (Shop(..), getShop)
+import Shop (Shop(..), getShop, parseToken)
 import User (User(..), getUser, ensureUser)
 
 main :: IO ()
@@ -28,7 +28,7 @@ main = do
 server :: Connection -> ScottyM()
 server db = do
   get "/ping" $ do
-    token <- param "token"
+    token <- getToken
     shops <- liftIO $ getShop db token
     case shops of
       [] -> do
@@ -37,7 +37,7 @@ server db = do
       (shop : _) ->
         json $ ShopResponse shop
   get "/identify" $ do
-    token <- param "token"
+    token <- getToken
     key <- param "user"
     users <- liftIO $ getUser db token key
     case users of
@@ -47,7 +47,7 @@ server db = do
       (user : _) ->
         json $ UserResponse user
   post "/identify" $ do
-    token <- param "token"
+    token <- getToken
     (u :: User) <- jsonData
     created <- liftIO $ ensureUser db token u
     json $ Response True ("User successfully " <> if created then "created" else "updated") 
@@ -55,6 +55,9 @@ server db = do
     text ""
   post "/spend" $ do
     text ""
+
+getToken :: ActionM Text
+getToken = fmap parseToken $ header "Authorization"
 
 
 data ShopResponse = ShopResponse { shop :: Shop }

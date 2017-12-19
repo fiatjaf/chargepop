@@ -16,6 +16,7 @@ import Database.PostgreSQL.Simple.ToField
 import Database.PostgreSQL.Simple.FromRow
 import Database.PostgreSQL.Simple.FromField
 import Data.Function
+import Debug.Trace
 
 data User = User { key :: Text , email :: Text , balance :: Text }
   deriving (Show, Generic)
@@ -41,5 +42,6 @@ ensureUser conn token (User key email _) =
   execute conn "\
 \ insert into users (key, email, balance, shop) \
 \ values (?, ?, 0, (select id from shops where token = ?)) \
+\ on conflict do nothing \
 \ " (key, email, token)
     & fmap (\c -> if c == 0 then False else True)

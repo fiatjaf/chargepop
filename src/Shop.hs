@@ -2,17 +2,18 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Shop
     ( Shop(..)
-    , getShop
+    , getShop, parseToken
     ) where
 
 import GHC.Generics
-import Data.Text.Lazy (Text)
+import Data.Text.Lazy (Text, splitOn)
+import Data.Function
 import Data.Aeson (ToJSON)
 import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple.ToRow
-import Database.PostgreSQL.Simple.ToField
+import Database.PostgreSQL.Simple.ToRow()
+import Database.PostgreSQL.Simple.ToField()
 import Database.PostgreSQL.Simple.FromRow
-import Database.PostgreSQL.Simple.FromField
+import Database.PostgreSQL.Simple.FromField()
 
 data Shop = Shop { email :: Text, referral :: Text, created_at :: Text }
   deriving (Show, Generic)
@@ -30,4 +31,4 @@ getShop conn token =
 
 parseToken :: Maybe Text -> Text
 parseToken Nothing = ""
-parseToken (Just auth) = auth
+parseToken (Just value) = splitOn "earer " value & (head . tail)
