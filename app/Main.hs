@@ -5,6 +5,8 @@ module Main where
 
 import Control.Monad.IO.Class
 import Data.Text.Lazy as T (Text, pack)
+import Data.Text.Lazy.Read
+import Data.Text.Lazy.IO as T (putStrLn)
 import Web.Scotty
 import System.Environment
 import Data.ByteString.Char8 as C8 (pack)
@@ -22,9 +24,10 @@ main :: IO ()
 main = do
   connString <- getEnv "DATABASE_URL"
   db <- connectPostgreSQL $ C8.pack connString
+  port <- fmap T.pack $ getEnv "PORT"
 
-  putStrLn "Starting server..."
-  scotty 3000 $ do
+  T.putStrLn $ "Starting server on port " <> port <> "..."
+  scotty (parsePort port) $ do
     middleware logStdoutDev
     server db
 
@@ -74,6 +77,11 @@ server db = do
 getToken :: ActionM Text
 getToken = fmap parseToken $ header "Authorization"
 
+parsePort :: Text -> Int
+parsePort port =
+  case decimal port of
+    Left _ -> 3000
+    Right (n, _) -> n
 
 data ShopResponse = ShopResponse { shop :: Shop }
 instance ToJSON ShopResponse where
