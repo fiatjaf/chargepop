@@ -1,0 +1,66 @@
+name:           chargepop
+version:        0.1.0.0
+synopsis:       Minimalist credit-based metered billing management.
+description:    Please see the README on Github at <https://github.com/githubuser/chargepop#readme>
+homepage:       https://github.com/fiatjaf/chargepop#readme
+bug-reports:    https://github.com/fiatjaf/chargepop/issues
+name:           chargepop
+license:        BSD3
+author:         Giovanni T. Parra
+maintainer:     fiatjaf@gmail.com
+copyright:      2017 Giovanni T. Parra
+cabal-version:  >= 1.10
+
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/chargepop
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , text
+    , aeson
+    , postgresql-simple
+  exposed-modules:
+      Shop
+    , User
+  other-modules:
+      Paths_chargepop
+  default-language: Haskell2010
+
+executable chargepop-exe
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , chargepop
+    , scotty
+    , aeson
+    , postgresql-simple
+    , bytestring
+    , text
+    , http-types
+    , wai-extra
+  other-modules:
+      Paths_chargepop
+  default-language: Haskell2010
+
+test-suite chargepop-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , chargepop
+  other-modules:
+      Paths_chargepop
+  default-language: Haskell2010
