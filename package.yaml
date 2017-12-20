@@ -1,17 +1,16 @@
 name:                chargepop
 version:             0.1.0.0
-github:              githubuser/chargepop
+github:              fiatjaf/chargepop
 license:             BSD3
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2017 Author name here
+author:              Giovanni T. Parra
+maintainer:          fiatjaf@gmail.com
+copyright:           2017 Giovanni T. Parra
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 # Metadata used when publishing your package
-synopsis:            Short description of your package
+synopsis:            Minimalist credit-based metered billing management.
 # category:            Web
 
 # To avoid duplicated efforts in documentation and dealing with the
