@@ -83,7 +83,11 @@ spend conn token spend =
 getSpends :: Connection -> Text -> Text -> IO [Spend]
 getSpends conn token key =
   query conn "\
-\ select (amount::float / 1000), description, timestamp::text from spends \
+\ select \
+\   (amount::float / 1000), \
+\   description, \
+\   to_char(timestamp, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') \
+\ from spends \
 \ inner join users on user_key = users.key \
 \ inner join shops on users.shop = shops.id \
 \ where key = ? and shops.token = ? \
