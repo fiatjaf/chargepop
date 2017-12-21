@@ -67,7 +67,7 @@ server db = do
     -- gte <- param "gte"
     -- lte <- param "lte"
     spends <- liftIO $ getSpends db token key
-    json spends
+    json $ SpendsResponse spends
 
   post "/spend" $ do
     token <- getToken
