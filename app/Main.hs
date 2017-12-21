@@ -18,7 +18,7 @@ import Data.Aeson.Types ((.=))
 import Data.Monoid ((<>))
 
 import Shop (Shop(..), getShop, parseToken)
-import User (User(..), Spend(..), getUser, ensureUser, spend, getSpends)
+import User (User(..), Spend(..), SpendData, getUser, ensureUser, spend, getSpends)
 
 main :: IO ()
 main = do
@@ -33,6 +33,7 @@ main = do
 
 server :: Connection -> ScottyM()
 server db = do
+
   get "/ping" $ do
     token <- getToken
     shops <- liftIO $ getShop db token
@@ -42,6 +43,7 @@ server db = do
         json $ Response False "Unauthorized. Access token is invalid"
       (shop : _) ->
         json $ ShopResponse shop
+
   get "/identify" $ do
     token <- getToken
     key <- param "user"
@@ -52,11 +54,13 @@ server db = do
         json $ Response False "Match error: Failed Match.Where validation in field user"
       (user : _) ->
         json $ UserResponse user
+
   post "/identify" $ do
     token <- getToken
     (u :: User) <- jsonData
     created <- liftIO $ ensureUser db token u
     json $ Response True ("User successfully " <> if created then "created" else "updated") 
+
   get "/spend" $ do
     token <- getToken
     key <- param "user"
@@ -64,14 +68,12 @@ server db = do
     -- lte <- param "lte"
     spends <- liftIO $ getSpends db token key
     json spends
-    
+
   post "/spend" $ do
     token <- getToken
-    key <- param "user"
-    amount <- param "amount"
-    desc <- param "description"
-    amt <- liftIO $ spend db token key (amount, desc)
-    json $ Response True (T.pack $ show amt <> " credits were spent")
+    (d :: SpendData) <- jsonData
+    numeric_amount <- liftIO $ spend db token d
+    json $ Response True (T.pack $ show numeric_amount <> " credits were spent")
 
 
 getToken :: ActionM Text
