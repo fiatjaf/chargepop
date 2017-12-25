@@ -76,7 +76,16 @@ spend conn token spend =
 \ ) \
 \ delete from spends \
 \ where shop = (select shop from inserted) \
-\   and timestamp < (select timestamp from inserted) - interval '2 months' \
+\   and timestamp < ( \
+\     select timestamp from ( \
+\       select timestamp from spends \
+\       where shop = (select shop from inserted) \
+\       order by timestamp desc \
+\       limit 30 \
+\     ) as last_30_records \
+\     order by timestamp asc \
+\     limit 1 \
+\   ) \
 \ " (token, amt spend, desc spend, user_key spend)
   & fmap (\_ -> amt spend)
 

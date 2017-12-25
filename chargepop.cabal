@@ -6,9 +6,9 @@ homepage:       https://github.com/fiatjaf/chargepop#readme
 bug-reports:    https://github.com/fiatjaf/chargepop/issues
 name:           chargepop
 license:        BSD3
-author:         Giovanni T. Parra
+author:         fiatjaf
 maintainer:     fiatjaf@gmail.com
-copyright:      2017 Giovanni T. Parra
+copyright:      2017 fiatjaf
 cabal-version:  >= 1.10
 
 extra-source-files:
